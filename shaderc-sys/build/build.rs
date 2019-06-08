@@ -28,10 +28,9 @@ fn build_shaderc(shaderc_dir: &PathBuf, use_ninja: bool) -> PathBuf {
     config
         .profile("Release")
         .define("CMAKE_POSITION_INDEPENDENT_CODE", "ON")
-        .define("SPIRV_SKIP_EXECUTABLES", "ON")
         .define("SPIRV_WERROR", "OFF")
         .define("SHADERC_SKIP_TESTS", "ON")
-        .define("CMAKE_INSTALL_LIBDIR", "lib");
+        .build_target("shaderc_combined_genfile");
     if use_ninja {
         config.generator("Ninja");
     }
@@ -229,7 +228,10 @@ fn main() {
         build_shaderc(&shaderc_dir, has_ninja)
     };
 
-    lib_path.push("lib");
+    lib_path.push("build");
+    lib_path.push("shaderc");
+    lib_path.push("libshaderc");
+
     println!("cargo:rustc-link-search=native={}", lib_path.display());
     println!("cargo:rustc-link-lib=static=shaderc_combined");
 
